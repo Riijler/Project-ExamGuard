@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ExamGuard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="header">
+
+        <div class="logo-section">
+
+            <div class="logo">
+                <img
+                    src="assets/images/ExamGuard Logo Color Variants3.png"
+                    alt="ExamGuard Logo">
+            </div>
+
+            <div class="brand-text">
+                <h1>ExamGuard</h1>
+                <p>Deteksi Kecurangan Ujian Secara Real-time</p>
+            </div>
+
+        </div>
+
+        <div class="header-right">
+
+            <div class="header-time">
+                <span id="current-time">00:00:00 WIB</span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="container">
+
+
+        <!-- ==================== WELCOME ==================== -->
+        <section class="top-section">
+
+            <div class="welcome">
+
+                <div class="welcome-icon">
+                    <i class="fa-solid fa-sun"></i>
+                </div>
+
+                <div>
+                    <h2>Selamat Datang, Teacher</h2>
+
+                    <p>
+                        Pantau aktivitas siswa secara real-time
+                        untuk memastikan ujian berjalan dengan jujur.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- STATUS SYSTEM -->
+            <div class="status-card" id="system-status">
+
+                <div class="status-icon">
+                    <span
+                        class="status-dot"
+                        id="status-dot">
+                    </span>
+                </div>
+
+                <div>
+                    <h4 id="status-title">
+                        Sistem Terhubung
+                    </h4>
+
+                    <p id="status-description">
+                        Semua perangkat aktif
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================== STATISTICS ==================== -->
+        <section class="stats">
+
+
+            <!-- TOTAL SISWA -->
+            <div class="card stat-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="card-content">
+
+                    <h3>Total Siswa</h3>
+
+                    <h1 id="total-students">
+                        0
+                    </h1>
+
+                    <p>
+                        Siswa Terdaftar
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- TERHUBUNG -->
+            <div class="card stat-card">
+
+                <div class="card-icon connected-icon">
+                    <i class="fa-solid fa-wifi"></i>
+                </div>
+
+                <div class="card-content">
+
+                    <h3>Terhubung</h3>
+
+                    <h1>
+                        11
+                    </h1>
+
+                    <p>
+                        Perangkat Aktif
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PELANGGARAN -->
+            <div class="card stat-card">
+
+                <div class="card-icon danger-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <div class="card-content">
+
+                    <h3>Pelanggaran</h3>
+
+                    <h1 id="total-violations">
+                        0
+                    </h1>
+
+                    <p>
+                        Terdeteksi Hari Ini
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================== ACTIVITY + CONTROL ==================== -->
+        <section class="activity-container">
+
+
+            <!-- ==================== LOG AKTIVITAS ==================== -->
+            <div class="activity card">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                        <h3>
+                            Log Aktivitas
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="view-all"
+                        id="view-all-activity">
+
+                        Lihat Semua
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Waktu
+                                </th>
+
+                                <th>
+                                    Nama
+                                </th>
+
+                                <th>
+                                    Aktivitas
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Aksi
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="activity-log">
+
+                            <!-- Data aktivitas akan masuk dari database -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================== KONTROL SISTEM ==================== -->
+            <div class="control card">
+
+                <div class="section-title">
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    <h3>
+                        Kontrol Sistem
+                    </h3>
+
+                </div>
+
+
+                <div class="control-buttons">
+
+
+                    <!-- REFRESH -->
+                    <button
+                        class="control-btn"
+                        id="refresh-dashboard">
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                        <span>
+                            Refresh
+                        </span>
+
+                        <small>
+                            Perbarui data kamera
+                        </small>
+
+                    </button>
+
+
+                    <!-- KAMERA -->
+                    <button
+                        class="control-btn"
+                        id="activate-camera">
+
+                        <i class="fa-solid fa-video"></i>
+
+                        <span>
+                            Aktifkan Kamera
+                        </span>
+
+                        <small>
+                            Mulai monitoring
+                        </small>
+
+                    </button>
+
+                    <button
+                        class="control-btn"
+                        id="calibrate-camera">
+
+                        <i class="fa-solid fa-crosshairs"></i>
+
+                        <span>
+                            Kalibrasi
+                        </span>
+
+                        <small>
+                            Atur posisi wajah
+                        </small>
+
+                    </button>
+
+                    <button
+                        class="control-btn"
+                        id="toggle-landmarks">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                        <span>
+                            Landmark: Mati
+                        </span>
+
+                        <small>
+                            Tampilkan titik wajah
+                        </small>
+
+                    </button>
+
+                    <button
+                        class="control-btn"
+                        id="stop-camera">
+
+                        <i class="fa-solid fa-power-off"></i>
+
+                        <span>
+                            Hentikan Kamera
+                        </span>
+
+                        <small>
+                            Tutup deteksi Python
+                        </small>
+
+                    </button>
+
+                    <button
+                        class="control-btn"
+                        id="restart-camera">
+
+                        <i class="fa-solid fa-rotate-right"></i>
+
+                        <span>
+                            Mulai Ulang MediaPipe
+                        </span>
+
+                        <small>
+                            Restart deteksi kamera
+                        </small>
+
+                    </button>
+
+                </div>
+
+                <div class="camera-system-status">
+                    <span class="category-dot warning-dot" id="esp32-status-dot"></span>
+                    <strong>ESP32:</strong>
+                    <span id="esp32-status-text">Memeriksa koneksi...</span>
+                </div>
+                <div class="camera-system-status">
+                    <strong>Kalibrasi:</strong>
+                    <span id="calibration-status-text">Memeriksa status...</span>
+                </div>
+
+                <div class="category-box student-mapping-box">
+                    <h4>Pemetaan Slot Kamera ke Siswa</h4>
+                    <p class="mapping-help">Slot ditentukan dari posisi wajah kiri ke kanan. Pilih siswa yang sesuai agar log tidak salah nama.</p>
+                    <div class="student-mapping-grid" id="student-mapping-grid"></div>
+                    <small class="mapping-status" id="student-mapping-status">Memuat daftar siswa...</small>
+                </div>
+
+
+                <!-- ==================== KATEGORI ==================== -->
+                <div class="category-box">
+
+                    <h4>
+                        Kategori Pelanggaran
+                    </h4>
+
+
+                    <div class="category-list">
+
+
+                        <!-- HANDPHONE -->
+                        <div class="category-item">
+
+                            <span
+                                class="category-dot danger-dot">
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Handphone
+                                </strong>
+
+                                <small>
+                                    1 kejadian
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- KELUAR FRAME -->
+                        <div class="category-item">
+
+                            <span
+                                class="category-dot warning-dot">
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Keluar Frame
+                                </strong>
+
+                                <small>
+                                    1 kejadian
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MELIHAT KE SAMPING -->
+                        <div class="category-item">
+
+                            <span
+                                class="category-dot warning-dot">
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Melihat ke Samping
+                                </strong>
+
+                                <small>
+                                    1 kejadian
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <dialog id="edit-log-dialog" class="edit-log-dialog">
+            <form id="edit-log-form">
+                <h3>Edit Log Aktivitas</h3>
+                <label for="edit-log-student">Siswa</label>
+                <select id="edit-log-student" required></select>
+
+                <label for="edit-log-activity">Aktivitas</label>
+                <input id="edit-log-activity" type="text" maxlength="255" required>
+
+                <label for="edit-log-status">Status</label>
+                <select id="edit-log-status" required>
+                    <option value="safe">Aman</option>
+                    <option value="warning">Peringatan</option>
+                    <option value="violation">Pelanggaran</option>
+                </select>
+
+                <div class="edit-log-actions">
+                    <button type="button" class="btn-small secondary-button" id="cancel-edit-log">Batal</button>
+                    <button type="submit" class="btn-small">Simpan</button>
+                </div>
+            </form>
+        </dialog>
+
+            <dialog id="all-activity-dialog" class="all-activity-dialog">
+                <div class="all-activity-content">
+                    <div class="all-activity-header">
+                        <h3>Semua Log Aktivitas</h3>
+                        <button type="button" class="edit-log-button" id="close-all-activity">Tutup</button>
+                    </div>
+                    <p id="all-activity-message" class="all-activity-message" aria-live="polite"></p>
+                    <div class="table-wrapper all-activity-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Nama</th>
+                                    <th>Aktivitas</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-activity-log"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </dialog>
+
+
+
+        <!-- ==================== LIVE MONITORING ==================== -->
+        <section class="monitoring card">
+
+
+            <!-- ==================== MONITORING HEADER ==================== -->
+            <div class="monitoring-header">
+
+                <div class="section-title">
+
+                    <i class="fa-solid fa-video"></i>
+
+                    <div>
+
+                        <h3>
+                            Live Monitoring
+                        </h3>
+
+                        <p>
+                            Deteksi pergerakan siswa secara langsung
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MONITORING BUTTONS -->
+                <div class="monitoring-buttons">
+
+                    <button
+                        class="btn-small"
+                        id="refresh-monitoring">
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                        Refresh
+
+                    </button>
+
+
+                    <button
+                        class="btn-small"
+                        id="camera-button">
+
+                        <i class="fa-solid fa-camera"></i>
+
+                        Kamera
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================== CAMERA ==================== -->
+            <div class="camera-box">
+
+                <div class="camera-status">
+
+                    <span></span>
+
+                    <strong id="camera-status-text">OFFLINE</strong>
+
+                </div>
+
+
+                <img
+                    id="camera-stream"
+                    alt="Live monitoring dengan deteksi MediaPipe"
+                    hidden>
+
+                <p id="camera-message" class="camera-message">
+                    Jalankan deteksi MediaPipe Python, lalu klik Kamera untuk melihat stream.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ==================== SOCKET.IO ==================== -->
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+
+    <!-- ==================== DASHBOARD JS ==================== -->
+
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
