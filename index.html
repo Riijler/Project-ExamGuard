@@ -176,85 +176,84 @@
 
 
 
-        <!-- ==================== ACTIVITY + CONTROL ==================== -->
+        <!-- ==================== MONITORING + CONTROL ==================== -->
         <section class="activity-container">
 
+            <!-- ==================== LIVE MONITORING ==================== -->
+            <section class="monitoring card">
 
-            <!-- ==================== LOG AKTIVITAS ==================== -->
-            <div class="activity card">
-
-                <div class="section-header">
+                <div class="monitoring-header">
 
                     <div class="section-title">
 
-                        <i class="fa-regular fa-clock"></i>
+                        <i class="fa-solid fa-video"></i>
 
-                        <h3>
-                            Log Aktivitas
-                        </h3>
+                        <div>
+
+                            <h3>
+                                Live Monitoring
+                            </h3>
+
+                            <p>
+                                Deteksi pergerakan siswa secara langsung
+                            </p>
+
+                        </div>
 
                     </div>
 
 
-                    <button
-                        type="button"
-                        class="view-all"
-                        id="view-all-activity">
+                    <div class="monitoring-buttons">
 
-                        Lihat Semua
+                        <button
+                            class="btn-small"
+                            id="refresh-monitoring">
 
-                        <i class="fa-solid fa-arrow-right"></i>
+                            <i class="fa-solid fa-rotate"></i>
 
-                    </button>
+                            Refresh
 
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Waktu
-                                </th>
-
-                                <th>
-                                    Nama
-                                </th>
-
-                                <th>
-                                    Aktivitas
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Aksi
-                                </th>
-
-                            </tr>
-
-                        </thead>
+                        </button>
 
 
-                        <tbody id="activity-log">
+                        <button
+                            class="btn-small"
+                            id="camera-button">
 
-                            <!-- Data aktivitas akan masuk dari database -->
+                            <i class="fa-solid fa-camera"></i>
 
-                        </tbody>
+                            Kamera
 
-                    </table>
+                        </button>
+
+                    </div>
 
                 </div>
 
-            </div>
 
+                <div class="camera-box">
+
+                    <div class="camera-status">
+
+                        <span></span>
+
+                        <strong id="camera-status-text">OFFLINE</strong>
+
+                    </div>
+
+
+                    <img
+                        id="camera-stream"
+                        alt="Live monitoring dengan deteksi MediaPipe"
+                        hidden>
+
+                    <p id="camera-message" class="camera-message">
+                        Jalankan deteksi MediaPipe Python, lalu klik Kamera untuk melihat stream.
+                    </p>
+
+                </div>
+
+            </section>
 
 
             <!-- ==================== KONTROL SISTEM ==================== -->
@@ -477,6 +476,81 @@
 
         </section>
 
+        <!-- ==================== LOG AKTIVITAS ==================== -->
+        <section class="activity card">
+
+            <div class="section-header">
+
+                <div class="section-title">
+
+                    <i class="fa-regular fa-clock"></i>
+
+                    <h3>
+                        Log Aktivitas
+                    </h3>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="view-all"
+                    id="view-all-activity">
+
+                    Lihat Semua
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Waktu
+                            </th>
+
+                            <th>
+                                Nama
+                            </th>
+
+                            <th>
+                                Aktivitas
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="activity-log">
+
+                        <!-- Data aktivitas akan masuk dari database -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
         <dialog id="edit-log-dialog" class="edit-log-dialog">
             <form id="edit-log-form">
                 <h3>Edit Log Aktivitas</h3>
@@ -523,90 +597,6 @@
                     </div>
                 </div>
             </dialog>
-
-
-
-        <!-- ==================== LIVE MONITORING ==================== -->
-        <section class="monitoring card">
-
-
-            <!-- ==================== MONITORING HEADER ==================== -->
-            <div class="monitoring-header">
-
-                <div class="section-title">
-
-                    <i class="fa-solid fa-video"></i>
-
-                    <div>
-
-                        <h3>
-                            Live Monitoring
-                        </h3>
-
-                        <p>
-                            Deteksi pergerakan siswa secara langsung
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- MONITORING BUTTONS -->
-                <div class="monitoring-buttons">
-
-                    <button
-                        class="btn-small"
-                        id="refresh-monitoring">
-
-                        <i class="fa-solid fa-rotate"></i>
-
-                        Refresh
-
-                    </button>
-
-
-                    <button
-                        class="btn-small"
-                        id="camera-button">
-
-                        <i class="fa-solid fa-camera"></i>
-
-                        Kamera
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- ==================== CAMERA ==================== -->
-            <div class="camera-box">
-
-                <div class="camera-status">
-
-                    <span></span>
-
-                    <strong id="camera-status-text">OFFLINE</strong>
-
-                </div>
-
-
-                <img
-                    id="camera-stream"
-                    alt="Live monitoring dengan deteksi MediaPipe"
-                    hidden>
-
-                <p id="camera-message" class="camera-message">
-                    Jalankan deteksi MediaPipe Python, lalu klik Kamera untuk melihat stream.
-                </p>
-
-            </div>
-
-        </section>
-
     </main>
 
 

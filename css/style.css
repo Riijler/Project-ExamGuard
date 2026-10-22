@@ -266,10 +266,10 @@ body {
 }
 
 
-/* ACTIVITY + CONTROL */
+/* MONITORING + CONTROL */
 .activity-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     gap: 20px;
     margin-bottom: 25px;
 }
@@ -277,6 +277,11 @@ body {
 .activity,
 .control {
     padding: 22px;
+}
+
+.activity {
+    min-height: 500px;
+    margin-bottom: 25px;
 }
 
 
@@ -663,6 +668,7 @@ tbody tr:last-child td {
 /* MONITORING */
 .monitoring {
     padding: 22px;
+    align-self: start;
 }
 
 .monitoring-header {
@@ -698,8 +704,8 @@ tbody tr:last-child td {
 /* CAMERA */
 .camera-box {
     position: relative;
-    width: min(100%, 900px, 93.33vh);
-    aspect-ratio: 4 / 3;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     margin: 0 auto;
     overflow: hidden;
     border-radius: 12px;
@@ -816,7 +822,7 @@ tbody tr:last-child td {
     }
 
     .camera-box {
-        width: min(100%, 93.33vh);
+        width: 100%;
     }
 
 }
