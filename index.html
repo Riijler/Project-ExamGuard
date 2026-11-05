@@ -87,7 +87,7 @@
                     </h4>
 
                     <p id="status-description">
-                        Semua perangkat aktif
+                        Menunggu koneksi backend dan webcam
                     </p>
                 </div>
 
@@ -136,13 +136,9 @@
 
                     <h3>Terhubung</h3>
 
-                    <h1>
-                        11
-                    </h1>
+                    <h1 id="total-connected">0</h1>
 
-                    <p>
-                        Perangkat Aktif
-                    </p>
+                    <p>Siswa masuk slot kamera</p>
 
                 </div>
 
@@ -215,6 +211,44 @@
 
                         </button>
 
+                        <select id="camera-device-select" aria-label="Pilih webcam untuk preview" disabled>
+                            <option value="">Klik Cari Webcam</option>
+                        </select>
+
+                        <button
+                            class="btn-small"
+                            id="refresh-camera-devices"
+                            type="button">
+                            Cari Webcam
+                        </button>
+
+                        <button
+                            class="btn-small"
+                            id="select-camera-device"
+                            type="button"
+                            disabled>
+                            Preview Webcam
+                        </button>
+
+                        <select id="mediapipe-camera-select" aria-label="Pilih webcam untuk MediaPipe" disabled>
+                            <option value="">Memeriksa kamera MediaPipe...</option>
+                        </select>
+
+                        <button
+                            class="btn-small"
+                            id="refresh-mediapipe-cameras"
+                            type="button">
+                            Cari Kamera MediaPipe
+                        </button>
+
+                        <button
+                            class="btn-small"
+                            id="select-mediapipe-camera"
+                            type="button"
+                            disabled>
+                            Pakai di MediaPipe
+                        </button>
+
 
                         <button
                             class="btn-small"
@@ -247,8 +281,17 @@
                         alt="Live monitoring dengan deteksi MediaPipe"
                         hidden>
 
+                    <video
+                        id="webcam-preview"
+                        autoplay
+                        playsinline
+                        muted
+                        aria-label="Pratinjau webcam"
+                        hidden>
+                    </video>
+
                     <p id="camera-message" class="camera-message">
-                        Jalankan deteksi MediaPipe Python, lalu klik Kamera untuk melihat stream.
+                        Klik Kamera dan izinkan akses webcam. Stream MediaPipe digunakan jika tersedia.
                     </p>
 
                 </div>
@@ -384,14 +427,6 @@
                     <span id="calibration-status-text">Memeriksa status...</span>
                 </div>
 
-                <div class="category-box student-mapping-box">
-                    <h4>Pemetaan Slot Kamera ke Siswa</h4>
-                    <p class="mapping-help">Slot ditentukan dari posisi wajah kiri ke kanan. Pilih siswa yang sesuai agar log tidak salah nama.</p>
-                    <div class="student-mapping-grid" id="student-mapping-grid"></div>
-                    <small class="mapping-status" id="student-mapping-status">Memuat daftar siswa...</small>
-                </div>
-
-
                 <!-- ==================== KATEGORI ==================== -->
                 <div class="category-box">
 
@@ -403,7 +438,7 @@
                     <div class="category-list">
 
 
-                        <!-- HANDPHONE -->
+                        <!-- MENUNDUK KE BAWAH -->
                         <div class="category-item">
 
                             <span
@@ -413,11 +448,11 @@
                             <div>
 
                                 <strong>
-                                    Handphone
+                                    Menunduk ke bawah
                                 </strong>
 
                                 <small>
-                                    1 kejadian
+                                    siswa tidak boleh menunduk kebawah
                                 </small>
 
                             </div>
@@ -439,7 +474,7 @@
                                 </strong>
 
                                 <small>
-                                    1 kejadian
+                                    siswa tidak boleh keluar dari jangkauan kamera
                                 </small>
 
                             </div>
@@ -461,7 +496,7 @@
                                 </strong>
 
                                 <small>
-                                    1 kejadian
+                                    siswa tidak boleh menoleh ke samping
                                 </small>
 
                             </div>
@@ -474,6 +509,19 @@
 
             </div>
 
+        </section>
+
+        <section class="card student-mapping-section" aria-labelledby="student-mapping-title">
+            <div class="section-title">
+                <i class="fa-solid fa-users-gear"></i>
+                <div>
+                    <h3 id="student-mapping-title">Pemetaan Slot Kamera ke Siswa</h3>
+                    <p>Atur siswa untuk setiap slot wajah yang terdeteksi.</p>
+                </div>
+            </div>
+            <p class="mapping-help">Slot 1–10 ditentukan dari posisi wajah kiri ke kanan. Pilih siswa yang sesuai agar log tidak salah nama.</p>
+            <div class="student-mapping-grid" id="student-mapping-grid"></div>
+            <small class="mapping-status" id="student-mapping-status">Memuat daftar siswa...</small>
         </section>
 
         <!-- ==================== LOG AKTIVITAS ==================== -->
@@ -492,21 +540,27 @@
                 </div>
 
 
-                <button
-                    type="button"
-                    class="view-all"
-                    id="view-all-activity">
-
-                    Lihat Semua
-
-                    <i class="fa-solid fa-arrow-right"></i>
-
-                </button>
+                <div class="activity-actions">
+                    <button
+                        type="button"
+                        class="reset-activity-button"
+                        id="reset-activity-view"
+                        title="Sembunyikan log lama dari tampilan ini tanpa menghapusnya dari database">
+                        Reset Tampilan
+                    </button>
+                    <button
+                        type="button"
+                        class="view-all"
+                        id="view-all-activity">
+                        Lihat Semua
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
 
             </div>
 
 
-            <div class="table-wrapper">
+            <div class="table-wrapper activity-table-wrapper">
 
                 <table>
 

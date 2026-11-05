@@ -30,74 +30,92 @@ const getViolations = (req, res) => {
 
 const createViolation = (req, res) => {
     const { student_id, type } = req.body;
+    const studentId = Number(student_id);
+    const normalizedType = typeof type === "string" ? type.trim() : "";
 
-    if (!student_id || !type) {
+    if (!Number.isInteger(studentId) || studentId < 1 ||
+        !normalizedType || normalizedType.length > 255) {
         return res.status(400).json({
-            message: "student_id dan type wajib diisi"
+            message: "student_id dan type tidak valid"
         });
     }
 
-    const sql = `
-        INSERT INTO violations
-        (student_id, type)
-        VALUES (?, ?)
-    `;
+    db.getConnection((connectionError, connection) => {
+        if (connectionError) {
+            console.error("Gagal mendapatkan koneksi database untuk pelanggaran:", connectionError);
+            return res.status(500).json({
+                message: "Gagal menyimpan data pelanggaran"
+            });
+        }
 
-    db.query(
-        sql,
-        [student_id, type],
-        (err, result) => {
-            if (err) {
-                console.error("Error menyimpan violation:", err);
-
+        connection.beginTransaction((transactionError) => {
+            if (transactionError) {
+                connection.release();
+                console.error("Gagal memulai transaksi pelanggaran:", transactionError);
                 return res.status(500).json({
                     message: "Gagal menyimpan data pelanggaran"
                 });
             }
 
-            // Simpan juga ke monitoring_logs
-            const monitoringSql = `
-                INSERT INTO monitoring_logs
-                (student_id, activity, status)
-                VALUES (?, ?, ?)
-            `;
-
-            db.query(
-                monitoringSql,
-                [student_id, type, "violation"],
-                (monitoringErr) => {
-                    if (monitoringErr) {
-                        console.error(
-                            "Gagal menyimpan monitoring log:",
-                            monitoringErr
-                        );
+            connection.query(
+                "INSERT INTO violations (student_id, type) VALUES (?, ?)",
+                [studentId, normalizedType],
+                (violationError, result) => {
+                    if (violationError) {
+                        return rollbackViolation(connection, res, violationError);
                     }
 
-                    const io = req.app.get("io");
+                    connection.query(
+                        `INSERT INTO monitoring_logs (student_id, activity, status)
+                         VALUES (?, ?, 'violation')`,
+                        [studentId, normalizedType],
+                        (monitoringError) => {
+                            if (monitoringError) {
+                                return rollbackViolation(connection, res, monitoringError);
+                            }
 
-                    // Kirim event pelanggaran
-                    io.emit("violation:new", {
-                        id: result.insertId,
-                        student_id,
-                        type
-                    });
+                            connection.commit((commitError) => {
+                                if (commitError) {
+                                    return rollbackViolation(connection, res, commitError);
+                                }
+                                connection.release();
 
-                    // Kirim event monitoring
-                    io.emit("monitoring:new", {
-                        student_id,
-                        activity: type,
-                        status: "violation"
-                    });
+                                const io = req.app.get("io");
+                                io.emit("violation:new", {
+                                    id: result.insertId,
+                                    student_id: studentId,
+                                    type: normalizedType
+                                });
+                                io.emit("monitoring:new", {
+                                    student_id: studentId,
+                                    activity: normalizedType,
+                                    status: "violation"
+                                });
 
-                    res.status(201).json({
-                        message: "Data pelanggaran berhasil disimpan",
-                        id: result.insertId
-                    });
+                                res.status(201).json({
+                                    message: "Pelanggaran dan log aktivitas tersimpan",
+                                    id: result.insertId
+                                });
+                            });
+                        }
+                    );
                 }
             );
-        }
-    );
+        });
+    });
 };
+
+function rollbackViolation(connection, res, error) {
+    connection.rollback(() => {
+        connection.release();
+        console.error("Gagal menyimpan pelanggaran dan log monitoring:", error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                message: "Gagal menyimpan data pelanggaran"
+            });
+        }
+    });
+}
 
 module.exports = {
     getViolations,

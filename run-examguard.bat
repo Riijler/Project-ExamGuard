@@ -23,6 +23,14 @@ if errorlevel 1 (
     exit /b 1
 )
 
+powershell.exe -NoProfile -Command "if (Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue) { exit 1 }"
+if errorlevel 1 (
+    echo Camera service already runs on port 5000.
+    echo Close the previous "ExamGuard - MediaPipe" window, then run this file again.
+    pause
+    exit /b 1
+)
+
 start "ExamGuard - Backend" /D "%ROOT%backend" cmd.exe /k "npm.cmd install && npm.cmd start"
 start "ExamGuard - MediaPipe" /D "%ROOT%" cmd.exe /k ""%ROOT%detection\.venv\Scripts\python.exe" "%ROOT%detection\tes.py""
 start "ExamGuard - Website" /D "%ROOT%" cmd.exe /k "py.exe -m http.server 8080"

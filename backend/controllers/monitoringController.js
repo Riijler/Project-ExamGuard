@@ -167,9 +167,44 @@ const updateMonitoringLog = (req, res) => {
     }
 };
 
+const deleteMonitoringLog = (req, res) => {
+    const logId = Number(req.params.id);
+    if (!Number.isInteger(logId) || logId < 1) {
+        return res.status(400).json({
+            message: "ID log aktivitas tidak valid"
+        });
+    }
+
+    db.query(
+        "DELETE FROM monitoring_logs WHERE id = ?",
+        [logId],
+        (err, result) => {
+            if (err) {
+                console.error("Error menghapus monitoring log:", err);
+                return res.status(500).json({
+                    message: "Gagal menghapus log aktivitas"
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    message: "Log aktivitas tidak ditemukan"
+                });
+            }
+
+            req.app.get("io").emit("monitoring:deleted", { id: logId });
+            res.json({
+                message: "Log aktivitas berhasil dihapus dari database",
+                id: logId
+            });
+        }
+    );
+};
+
 
 module.exports = {
     getMonitoringLogs,
     createMonitoringLog,
-    updateMonitoringLog
+    updateMonitoringLog,
+    deleteMonitoringLog
 };

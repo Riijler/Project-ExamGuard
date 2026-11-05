@@ -284,6 +284,59 @@ body {
     margin-bottom: 25px;
 }
 
+.activity-table-wrapper {
+    max-height: 430px;
+    overflow: auto;
+}
+
+.activity-table-wrapper thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--cream);
+}
+
+.activity-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reset-activity-button {
+    padding: 8px 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: white;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.reset-activity-button:hover {
+    background: var(--cream);
+    color: var(--text);
+}
+
+.student-mapping-section {
+    padding: 22px;
+    margin-bottom: 25px;
+}
+
+.student-mapping-section .section-title {
+    margin-bottom: 14px;
+}
+
+.student-mapping-section .section-title p {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.student-mapping-section .student-mapping-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 16px;
+}
+
 
 /* SECTION HEADER */
 .section-header {
@@ -369,6 +422,16 @@ tbody tr:last-child td {
     border: 0;
     border-radius: 6px;
     background: var(--dark);
+    color: white;
+    cursor: pointer;
+}
+
+.delete-log-button {
+    margin-left: 5px;
+    padding: 6px 9px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--red);
     color: white;
     cursor: pointer;
 }
@@ -476,10 +539,10 @@ tbody tr:last-child td {
     background: #857970;
 }
 
-.student-mapping-box .mapping-help {
-    margin: -5px 0 12px;
+.student-mapping-section .mapping-help {
+    margin: 0 0 14px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.5;
 }
 
@@ -680,7 +743,27 @@ tbody tr:last-child td {
 
 .monitoring-buttons {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
     gap: 8px;
+}
+
+.monitoring-buttons select {
+    max-width: 180px;
+    min-width: 120px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--text);
+    font-size: 11px;
+}
+
+.monitoring-buttons select:disabled,
+.monitoring-buttons button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .btn-small {
@@ -712,7 +795,8 @@ tbody tr:last-child td {
     background: #201510;
 }
 
-.camera-box img {
+.camera-box img,
+.camera-box video {
     display: block;
     width: 100%;
     height: 100%;
@@ -720,7 +804,8 @@ tbody tr:last-child td {
     background: #201510;
 }
 
-.camera-box img[hidden] {
+.camera-box img[hidden],
+.camera-box video[hidden] {
     display: none;
 }
 

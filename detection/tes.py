@@ -1,5 +1,6 @@
 import cv2, time, math, threading
 import json
+import os
 import subprocess
 import sys
 import queue
@@ -17,7 +18,9 @@ from mediapipe.tasks.python import vision
 # ================== PENGATURAN ==================
 ESP_PORT = 'COM3'
 BAUD = 115200
-NUM_FACES = 5
+NUM_FACES = 10
+REQUESTED_CAMERA_INDEX = os.environ.get("EXAMGUARD_CAMERA_INDEX")
+CAMERA_INDEX = int(REQUESTED_CAMERA_INDEX) if REQUESTED_CAMERA_INDEX is not None else None
 
 YAW_LIMIT = 23        # derajat menoleh kiri/kanan dari posisi lurus
 PITCH_LIMIT = 15      # derajat menunduk dari posisi lurus
@@ -39,11 +42,13 @@ control_state = {
     "calibrated": False,
     "esp32Connected": False,
     "cameraRunning": True,
+    "cameraIndex": CAMERA_INDEX,
 }
 calibration_requested = threading.Event()
 stop_requested = threading.Event()
 restart_requested = threading.Event()
 detection_events = queue.Queue()
+student_presence_events = queue.Queue(maxsize=1)
 local_detection_lock = threading.Lock()
 local_detection_events = []
 next_local_detection_id = 1
@@ -80,6 +85,26 @@ def post_detection_events():
 
 threading.Thread(target=post_detection_events, daemon=True).start()
 
+def post_student_presence():
+    while True:
+        objects = student_presence_events.get()
+        try:
+            request = Request(
+                "http://127.0.0.1:3000/api/detection/presence",
+                data=json.dumps({"objects": objects}).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urlopen(request, timeout=2) as response:
+                response.read()
+        except OSError as error:
+            print("Gagal memperbarui siswa aktif di database:", error)
+        finally:
+            student_presence_events.task_done()
+
+
+threading.Thread(target=post_student_presence, daemon=True).start()
+
 class StreamHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_path = urlparse(self.path)
@@ -88,6 +113,19 @@ class StreamHandler(BaseHTTPRequestHandler):
             with control_lock:
                 status = dict(control_state)
             self.send_json(200, status)
+            return
+        if path == "/cameras":
+            cameras = []
+            for index in range(6):
+                if index == CAMERA_INDEX:
+                    cameras.append({"index": index})
+                    continue
+                camera = cv2.VideoCapture(index, cv2.CAP_DSHOW)
+                available = camera.isOpened() and camera.read()[0]
+                camera.release()
+                if available:
+                    cameras.append({"index": index})
+            self.send_json(200, {"cameras": cameras})
             return
         if path == "/detections":
             try:
@@ -133,6 +171,34 @@ class StreamHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split("?", 1)[0]
+        if path == "/control/select-camera":
+            try:
+                content_length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(content_length))
+            except (ValueError, json.JSONDecodeError):
+                self.send_json(400, {"error": "Pilihan kamera tidak valid"})
+                return
+
+            camera_index = payload.get("index") if isinstance(payload, dict) else None
+            if (not isinstance(camera_index, int) or isinstance(camera_index, bool) or
+                    camera_index < 0 or camera_index > 5):
+                self.send_json(400, {"error": "Index webcam harus antara 0 sampai 5"})
+                return
+
+            with control_lock:
+                if not control_state["cameraRunning"]:
+                    self.send_json(409, {"error": "Deteksi kamera tidak berjalan"})
+                    return
+                os.environ["EXAMGUARD_CAMERA_INDEX"] = str(camera_index)
+                control_state["cameraRunning"] = False
+                control_state["cameraIndex"] = camera_index
+                restart_requested.set()
+                stop_requested.set()
+                status = dict(control_state)
+                status["restarting"] = True
+            self.send_json(200, status)
+            return
+
         if path == "/control/student-mappings":
             try:
                 content_length = int(self.headers.get("Content-Length", "0"))
@@ -148,7 +214,7 @@ class StreamHandler(BaseHTTPRequestHandler):
 
             normalized_names = {}
             for slot, name in mappings.items():
-                if (str(slot) not in {"1", "2", "3", "4", "5"} or
+                if (str(slot) not in {str(number) for number in range(1, 11)} or
                         not isinstance(name, str) or len(name) > 100):
                     self.send_json(400, {"error": "Label siswa tidak valid"})
                     return
@@ -248,14 +314,46 @@ options = vision.FaceLandmarkerOptions(
 )
 landmarker = vision.FaceLandmarker.create_from_options(options)
 
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    raise RuntimeError("Kamera tidak dapat dibuka. Pastikan kamera tidak sedang dipakai aplikasi lain.")
+def open_camera(index):
+    camera = cv2.VideoCapture(index, cv2.CAP_DSHOW)
+    if not camera.isOpened():
+        camera.release()
+        return None
+
+    success, _ = camera.read()
+    if not success:
+        camera.release()
+        return None
+    return camera
+
+
+camera_indices = (
+    [int(REQUESTED_CAMERA_INDEX)]
+    if REQUESTED_CAMERA_INDEX is not None
+    else range(6)
+)
+cap = None
+for camera_index in camera_indices:
+    cap = open_camera(camera_index)
+    if cap is not None:
+        CAMERA_INDEX = camera_index
+        break
+
+if cap is None:
+    raise RuntimeError(
+        "Webcam tidak dapat dibuka. Pastikan webcam tersambung dan tidak sedang "
+        "dipakai aplikasi lain."
+    )
+
+with control_lock:
+    control_state["cameraIndex"] = CAMERA_INDEX
 
 stream_server = ThreadingHTTPServer((STREAM_HOST, STREAM_PORT), StreamHandler)
 threading.Thread(target=stream_server.serve_forever, daemon=True).start()
+print(f"Webcam index {CAMERA_INDEX} aktif.")
 print(f"Stream frame tersedia di http://{STREAM_HOST}:{STREAM_PORT}/frame.jpg")
 t0 = time.time()
+last_presence_update = 0
 
 starts = {}              # timer menoleh/menunduk per objek
 smooth = {}              # sudut yang sudah dihaluskan per objek
@@ -303,6 +401,12 @@ while cap.isOpened():
         })
     faces.sort(key=lambda f: f["cx"])
     max_seen = max(max_seen, len(faces))
+    if now - last_presence_update >= 1:
+        try:
+            student_presence_events.put_nowait(list(range(1, len(faces) + 1)))
+        except queue.Full:
+            pass
+        last_presence_update = now
 
     # ---------- kalibrasi ----------
     calibrating = now < calibrating_until

@@ -9,6 +9,7 @@ const studentRoutes = require("./routes/students");
 const monitoringRoutes = require("./routes/monitoring");
 const violationRoutes = require("./routes/violations");
 const detectionRoutes = require("./routes/detection");
+const dashboardRoutes = require("./routes/dashboard");
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +36,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/monitoring", monitoringRoutes);
 app.use("/api/violations", violationRoutes);
 app.use("/api/detection", detectionRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // SOCKET.IO
 
@@ -48,23 +50,26 @@ io.on("connection", (socket) => {
 
 });
 
-// DATABASE CHECK
+// DATABASE CHECK AND REQUIRED TABLES
 
-db.query("SELECT 1", (err) => {
+db.query(
+    `CREATE TABLE IF NOT EXISTS student_violation_state (
+        student_id INT UNSIGNED NOT NULL,
+        indication_count INT UNSIGNED NOT NULL DEFAULT 0,
+        permanently_violating TINYINT(1) NOT NULL DEFAULT 0,
+        PRIMARY KEY (student_id),
+        CONSTRAINT fk_student_violation_state_student
+            FOREIGN KEY (student_id) REFERENCES students (id)
+    ) ENGINE=InnoDB`,
+    (err) => {
+        if (err) {
+            console.error("Gagal menyiapkan tabel status pelanggaran siswa:", err.message);
+            return;
+        }
 
-    if (err) {
-        console.error("Database gagal terhubung:", err.message);
-        return;
+        console.log("Database MySQL terhubung!");
+        server.listen(3000, "0.0.0.0", () => {
+            console.log("Server berjalan di http://localhost:3000");
+        });
     }
-
-    console.log("Database MySQL terhubung!");
-
-});
-
-// START SERVER
-
-server.listen(3000, "0.0.0.0", () => {
-
-    console.log("Server berjalan di http://localhost:3000");
-
-});
+);
