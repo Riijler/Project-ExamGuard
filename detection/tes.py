@@ -22,7 +22,7 @@ NUM_FACES = 10
 REQUESTED_CAMERA_INDEX = os.environ.get("EXAMGUARD_CAMERA_INDEX")
 CAMERA_INDEX = int(REQUESTED_CAMERA_INDEX) if REQUESTED_CAMERA_INDEX is not None else None
 
-YAW_LIMIT = 23        # derajat menoleh kiri/kanan dari posisi lurus
+YAW_LIMIT = 21        # derajat menoleh kiri/kanan dari posisi lurus
 PITCH_LIMIT = 15      # derajat menunduk dari posisi lurus
 HOLD_SEC = 1.5        # lama menoleh/menunduk sebelum alarm
 LOST_SEC = 0.5        # lama wajah hilang sebelum alarm

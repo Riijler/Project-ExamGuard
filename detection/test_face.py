@@ -23,8 +23,8 @@ BACKEND_URL = "http://10.98.166.146:3000/api/detection"
 # Server kamera
 CAMERA_PORT = 5000
 
-YAW_LIMIT = 25        # derajat menoleh kiri/kanan dari posisi lurus
-PITCH_LIMIT = 20      # derajat menunduk dari posisi lurus
+YAW_LIMIT = 23        # derajat menoleh kiri/kanan dari posisi lurus
+PITCH_LIMIT = 18      # derajat menunduk dari posisi lurus
 HOLD_SEC = 1.5        # lama menoleh/menunduk sebelum alarm
 LOST_SEC = 0.5        # lama wajah hilang sebelum alarm
 CALIB_SEC = 2.0        # lama kalibrasi
